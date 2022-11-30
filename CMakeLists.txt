@@ -10,11 +10,6 @@ set(CXX_FLAGS "-fconcepts-ts")
 
 project (joystick-service)
 
-#find_package(Curses REQUIRED)
-#include_directories(${CURSES_INCLUDE_DIR})
-
-find_package(yaml-cpp REQUIRED)
-include_directories(${YAML_CPP_INCLUDE_DIR})
 find_package(cppzmq)
 find_package(Threads REQUIRED)
 
@@ -23,8 +18,15 @@ set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 ExternalProject_Add( argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    INSTALL_COMMAND cmake -E echo "Skipping install step."
   )
+ExternalProject_Get_Property(argparse)
+
+ExternalProject_Add(yaml
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    INSTALL_COMMAND cmake -E echo "Skipping install step."
+)
+ExternalProject_Get_Property(yaml)
 
 include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -34,9 +36,10 @@ add_executable ( ${CMAKE_PROJECT_NAME}
   src/joystick.cpp)
 
 add_dependencies(${CMAKE_PROJECT_NAME}
-  argparse)
+  argparse
+  yaml)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-  ${YAML_CPP_LIBRARIES}
-  zmq)
+  ${EXTERNAL_INSTALL_LOCATION}/lib64/libyaml-cpp.a
+  zmq )
 
