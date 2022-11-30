@@ -19,7 +19,6 @@ pkgs.mkShell {
      cppzmq
      zmqpp
      ninja
-     libyamlcpp
      python-with-my-packages
   ];
   
